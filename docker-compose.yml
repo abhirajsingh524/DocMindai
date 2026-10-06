@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  # Load balancer / Reverse proxy
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api_replica_1
+      - api_replica_2
+      - web
+
+  # Frontend Web Client
+  web:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.web
+    expose:
+      - "80"
+
+  # FastAPI API Replica 1
+  api_replica_1:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/docmind.db
+      - STORAGE_DIR=/app/data/storage
+      - INDEX_DIR=/app/data/indices
+      - LLM_PROVIDER=apinex
+      - APINEX_BASE_URL=https://api.apinex.bond/v1
+      - APINEX_MODEL=free/glm-5.3-flash
+      - APINEX_API_KEY=${APINEX_API_KEY}
+    volumes:
+      - docmind_data:/app/data
+    expose:
+      - "8000"
+
+  # FastAPI API Replica 2 (Dual Replica Configuration)
+  api_replica_2:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/docmind.db
+      - STORAGE_DIR=/app/data/storage
+      - INDEX_DIR=/app/data/indices
+      - LLM_PROVIDER=apinex
+      - APINEX_BASE_URL=https://api.apinex.bond/v1
+      - APINEX_MODEL=free/glm-5.3-flash
+      - APINEX_API_KEY=${APINEX_API_KEY}
+    volumes:
+      - docmind_data:/app/data
+    expose:
+      - "8000"
+
+volumes:
+  docmind_data:
