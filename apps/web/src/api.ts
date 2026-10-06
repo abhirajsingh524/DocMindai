@@ -54,6 +54,21 @@ export async function uploadDocument(file: File): Promise<DocumentItem> {
   return res.json();
 }
 
+export async function renameDocument(id: string, newFilename: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/v1/documents/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filename: newFilename }),
+  });
+  if (!res.ok) throw new Error("Failed to rename document");
+}
+
+export async function fetchOperationsBacklog(): Promise<any> {
+  const res = await fetch(`${API_BASE}/api/v1/operations/backlog`);
+  if (!res.ok) throw new Error("Failed to fetch operations backlog");
+  return res.json();
+}
+
 export async function retryDocument(id: string): Promise<void> {
   const res = await fetch(`${API_BASE}/api/v1/documents/${id}/retry`, { method: "POST" });
   if (!res.ok) throw new Error("Failed to retry document processing");

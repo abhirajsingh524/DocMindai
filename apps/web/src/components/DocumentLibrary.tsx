@@ -20,6 +20,7 @@ interface DocumentLibraryProps {
   documents: DocumentItem[];
   onOpenUpload: () => void;
   onRetryDocument: (id: string) => Promise<void>;
+  onRenameDocument: (id: string, newName: string) => Promise<void>;
   onDeleteDocument: (id: string) => Promise<void>;
   onViewDocument: (doc: DocumentItem) => void;
   onRefresh: () => void;
@@ -29,6 +30,7 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({
   documents,
   onOpenUpload,
   onRetryDocument,
+  onRenameDocument,
   onDeleteDocument,
   onViewDocument,
   onRefresh,
@@ -218,6 +220,19 @@ export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({
                     {/* Actions */}
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => {
+                            const newName = prompt("Rename document:", doc.filename);
+                            if (newName && newName.trim() && newName.trim() !== doc.filename) {
+                              onRenameDocument(doc.id, newName.trim());
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-[#B5C1D4] hover:text-[#A78BFA] hover:bg-[#1C2742] transition-colors"
+                          title="Rename Document"
+                        >
+                          <FileCode className="w-4 h-4" />
+                        </button>
+
                         <button
                           onClick={() => onViewDocument(doc)}
                           className="p-1.5 rounded-lg text-[#B5C1D4] hover:text-[#56E6E0] hover:bg-[#1C2742] transition-colors"

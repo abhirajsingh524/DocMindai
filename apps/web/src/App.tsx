@@ -18,6 +18,7 @@ import {
   fetchMessages,
   sendMessageStream,
   retryDocument,
+  renameDocument,
   deleteDocument,
   fetchCitationSource,
   cancelGeneration
@@ -220,6 +221,12 @@ export function App() {
     setDocuments(docs);
   };
 
+  const handleRenameDoc = async (id: string, newName: string) => {
+    await renameDocument(id, newName);
+    const docs = await fetchDocuments();
+    setDocuments(docs);
+  };
+
   const handleDeleteDoc = async (id: string) => {
     await deleteDocument(id);
     const docs = await fetchDocuments();
@@ -286,6 +293,7 @@ export function App() {
               documents={documents}
               onOpenUpload={() => setIsUploadOpen(true)}
               onRetryDocument={handleRetryDoc}
+              onRenameDocument={handleRenameDoc}
               onDeleteDocument={handleDeleteDoc}
               onViewDocument={(doc) => setViewerDoc(doc)}
               onRefresh={() => fetchDocuments().then(setDocuments)}

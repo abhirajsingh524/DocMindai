@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from services.api.config import settings
 from services.api.database import engine, Base, AsyncSessionLocal
 from services.api.auth import get_or_create_default_user_and_workspace
-from services.api.routers import health, auth, documents, conversations, citations, stats
+from services.api.routers import health, auth, documents, conversations, citations, stats, operations
 
 logging.basicConfig(
     level=logging.INFO,
@@ -65,6 +65,7 @@ app.include_router(documents.router)
 app.include_router(conversations.router)
 app.include_router(citations.router)
 app.include_router(stats.router)
+app.include_router(operations.router)
 
 @app.get("/")
 async def root():

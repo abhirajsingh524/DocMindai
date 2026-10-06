@@ -280,6 +280,31 @@ async def get_document(
         ]
     }
 
+class RenameDocumentRequest(BaseModel):
+    filename: str
+
+@router.patch("/documents/{id}")
+async def rename_document(
+    id: str,
+    req: RenameDocumentRequest,
+    workspace: Workspace = Depends(get_current_workspace),
+    db: AsyncSession = Depends(get_db)
+):
+    res = await db.execute(
+        select(Document).where(Document.id == id, Document.workspace_id == workspace.id)
+    )
+    doc = res.scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    clean_name = req.filename.strip()
+    if not clean_name:
+        raise HTTPException(status_code=400, detail="Filename cannot be empty")
+
+    doc.filename = clean_name
+    await db.commit()
+    return {"id": doc.id, "filename": doc.filename}
+
 @router.get("/documents/{id}/content")
 async def get_document_content(
     id: str,
