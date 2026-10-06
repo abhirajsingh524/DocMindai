@@ -1,0 +1,15 @@
+DocMind AI: Semantic RAG System Research Brief
+Date: October 2026
+Author: AI Systems Research Lab
+
+1. Executive Summary
+Retrieval-Augmented Generation (RAG) combines dense vector retrieval with large language models to provide grounded, traceable answers. By injecting relevant passages as context into the prompt, RAG reduces hallucinations and enables citations pointing to verified sources.
+
+2. Dense Retrieval and Vector Embeddings
+In DocMind AI, documents are split into semantic chunks of 500-800 tokens with 100-token overlaps. Embeddings are generated using normalized 384-dimensional dense vectors. FAISS (Facebook AI Similarity Search) CPU index operates with inner product scoring, which corresponds to cosine similarity for normalized vectors. FAISS CPU can execute top-k nearest neighbor searches in sub-50ms latency across thousands of passages.
+
+3. APINEX free/glm-5.3-flash Language Model
+Answer synthesis uses the APINEX free/glm-5.3-flash model hosted at https://api.apinex.bond/v1. The model receives strictly formatted evidence blocks where each excerpt is tagged with an index citation such as [C1], [C2]. The model is instructed to treat all context as untrusted data and refuse to invent claims unsupported by the passages.
+
+4. Performance & Reliability
+Multi-replica FastAPI deployment enables horizontal scaling while a centralized job queue handles document extraction and FAISS indexing. Background tasks prevent long-running parsing from blocking the ASGI event loop.
